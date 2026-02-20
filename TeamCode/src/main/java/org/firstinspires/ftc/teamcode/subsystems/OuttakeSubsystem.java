@@ -57,6 +57,12 @@ public class OuttakeSubsystem {
         rightOuttake.setPower(power);
     }
 
+    public void setPower(double power) {
+        double clippedPower = Range.clip(power, -1.0, 1.0);
+        leftOuttake.setPower(clippedPower);
+        rightOuttake.setPower(clippedPower);
+    }
+
     public void setTargetsFromDistance(double distanceInches) {
         setBangBangTargetVelocity(velocityByDistance.lookup(distanceInches));
         setAnglePosition(angleByDistance.lookup(distanceInches));

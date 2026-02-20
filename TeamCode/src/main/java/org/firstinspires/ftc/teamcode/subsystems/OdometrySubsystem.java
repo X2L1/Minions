@@ -38,4 +38,9 @@ public class OdometrySubsystem {
     public double getHeadingDegrees() {
         return pinpoint.getPosition().getHeading(AngleUnit.DEGREES);
     }
+
+    public void resetPosAndIMU() {
+        pinpoint.resetPosAndIMU();
+        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
+    }
 }

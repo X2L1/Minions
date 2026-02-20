@@ -66,6 +66,14 @@ public class TurretSubsystem {
         servoSweepDegrees = degrees;
     }
 
+    public double getTurretHeadingDegrees() {
+        return turretHeadingDegrees;
+    }
+
+    public double getServoSweepDegrees() {
+        return servoSweepDegrees;
+    }
+
     // Convert heading (0..360) into servo position (0..1) and send to both servos.
     private void applyServos() {
         double position = Range.clip(turretHeadingDegrees / servoSweepDegrees, 0.0, 1.0);
