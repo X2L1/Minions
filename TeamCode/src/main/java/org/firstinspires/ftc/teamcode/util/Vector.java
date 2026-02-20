@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.util;
 
 public final class Vector {
+    private static final double EPSILON = 1e-10;
     private final double x;
     private final double y;
 
@@ -46,11 +47,11 @@ public final class Vector {
     }
 
     public Vector normalized() {
-        double magnitude = magnitude();
-        if (magnitude == 0) {
+        double vectorMagnitude = magnitude();
+        if (Math.abs(vectorMagnitude) < EPSILON) {
             return new Vector(0, 0);
         }
-        return scale(1.0 / magnitude);
+        return scale(1.0 / vectorMagnitude);
     }
 
     public static Vector fromPolar(double magnitude, double directionRadians) {

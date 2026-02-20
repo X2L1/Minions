@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.util;
 
 public final class MathUtils {
+    private static final double EPSILON = 1e-10;
+
     private MathUtils() {
     }
 
@@ -17,7 +19,7 @@ public final class MathUtils {
 
     public static double mapRange(
             double value, double inputMin, double inputMax, double outputMin, double outputMax) {
-        if (inputMin == inputMax) {
+        if (Math.abs(inputMax - inputMin) < EPSILON) {
             throw new IllegalArgumentException("inputMin and inputMax cannot be equal");
         }
         double t = (value - inputMin) / (inputMax - inputMin);
