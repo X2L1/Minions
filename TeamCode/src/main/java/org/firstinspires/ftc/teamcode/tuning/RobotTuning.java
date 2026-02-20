@@ -5,8 +5,8 @@ public final class RobotTuning {
     }
 
     public static final class Odometry {
-        public static double xOffsetMm = -84.0;
-        public static double yOffsetMm = -168.0;
+        public static double xOffsetMM = -84.0;
+        public static double yOffsetMM = -168.0;
 
         private Odometry() {
         }

@@ -76,9 +76,10 @@ public class OuttakeSubsystem {
 
     private static void addPoints(InterpolatedLookupTable table, double[][] points) {
         for (double[] point : points) {
-            if (point.length >= 2) {
-                table.add(point[0], point[1]);
+            if (point.length < 2) {
+                throw new IllegalArgumentException("Each lookup point must have distance and value");
             }
+            table.add(point[0], point[1]);
         }
     }
 }

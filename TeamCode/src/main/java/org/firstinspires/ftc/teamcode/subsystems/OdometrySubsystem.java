@@ -13,7 +13,7 @@ public class OdometrySubsystem {
 
     public OdometrySubsystem(HardwareMap hardwareMap) {
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        pinpoint.setOffsets(RobotTuning.Odometry.xOffsetMm, RobotTuning.Odometry.yOffsetMm, DistanceUnit.MM);
+        pinpoint.setOffsets(RobotTuning.Odometry.xOffsetMM, RobotTuning.Odometry.yOffsetMM, DistanceUnit.MM);
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setEncoderDirections(
                 GoBildaPinpointDriver.EncoderDirection.FORWARD,
