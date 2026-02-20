@@ -12,6 +12,7 @@ public class TurretSubsystem {
     private double targetXInches;
     private double targetYInches;
     private double turretHeadingDegrees;
+    private double turretRangeDegrees = 360.0;
 
     public TurretSubsystem(HardwareMap hardwareMap, OdometrySubsystem odometrySubsystem) {
         leftTurretServo = hardwareMap.get(Servo.class, "leftTurret");
@@ -26,13 +27,13 @@ public class TurretSubsystem {
     }
 
     public void rotateByDegrees(double deltaDegrees) {
-        turretHeadingDegrees = normalizeDegrees(turretHeadingDegrees + deltaDegrees);
+        turretHeadingDegrees = normalizeDegrees(turretHeadingDegrees + deltaDegrees, turretRangeDegrees);
         applyServos();
     }
 
     public void updateAutoAlign(double robotXInches, double robotYInches) {
         double targetHeading = Math.toDegrees(Math.atan2(targetYInches - robotYInches, targetXInches - robotXInches));
-        turretHeadingDegrees = normalizeDegrees(targetHeading);
+        turretHeadingDegrees = normalizeDegrees(targetHeading, turretRangeDegrees);
         applyServos();
     }
 
@@ -40,14 +41,18 @@ public class TurretSubsystem {
         updateAutoAlign(odometrySubsystem.getXInches(), odometrySubsystem.getYInches());
     }
 
+    public void setTurretRangeDegrees(double rangeDegrees) {
+        turretRangeDegrees = Math.max(1.0, rangeDegrees);
+    }
+
     private void applyServos() {
-        double position = Range.clip(turretHeadingDegrees / 360.0, 0.0, 1.0);
+        double position = Range.clip(turretHeadingDegrees / turretRangeDegrees, 0.0, 1.0);
         leftTurretServo.setPosition(position);
         rightTurretServo.setPosition(position);
     }
 
-    private static double normalizeDegrees(double angle) {
-        double normalized = angle % 360.0;
-        return normalized < 0 ? normalized + 360.0 : normalized;
+    private static double normalizeDegrees(double angle, double rangeDegrees) {
+        double normalized = angle % rangeDegrees;
+        return normalized < 0 ? normalized + rangeDegrees : normalized;
     }
 }

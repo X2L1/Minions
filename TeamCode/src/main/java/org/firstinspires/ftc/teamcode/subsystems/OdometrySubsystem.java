@@ -8,11 +8,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public class OdometrySubsystem {
+    private static final double X_OFFSET_MM = -84.0;
+    private static final double Y_OFFSET_MM = -168.0;
+
     private final GoBildaPinpointDriver pinpoint;
 
     public OdometrySubsystem(HardwareMap hardwareMap) {
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        pinpoint.setOffsets(-84.0, -168.0, DistanceUnit.MM);
+        pinpoint.setOffsets(X_OFFSET_MM, Y_OFFSET_MM, DistanceUnit.MM);
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setEncoderDirections(
                 GoBildaPinpointDriver.EncoderDirection.FORWARD,
