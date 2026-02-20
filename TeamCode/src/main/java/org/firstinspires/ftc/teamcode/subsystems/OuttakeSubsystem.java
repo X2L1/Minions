@@ -13,9 +13,6 @@ public class OuttakeSubsystem {
     private final Servo rightAngleServo;
 
     private double targetVelocity;
-    private double highPower = 1.0;
-    private double lowPower = 0.0;
-    private double tolerance = 20.0;
 
     public OuttakeSubsystem(HardwareMap hardwareMap) {
         leftOuttake = hardwareMap.get(DcMotorEx.class, "leftOuttake");
@@ -37,15 +34,6 @@ public class OuttakeSubsystem {
         targetVelocity = Math.max(0.0, ticksPerSecond);
     }
 
-    public void setBangBangPowers(double high, double low) {
-        highPower = Range.clip(high, -1.0, 1.0);
-        lowPower = Range.clip(low, -1.0, 1.0);
-    }
-
-    public void setBangBangTolerance(double velocityTolerance) {
-        tolerance = Math.max(0.0, velocityTolerance);
-    }
-
     public void updateBangBang() {
         if (targetVelocity <= 0.0) {
             leftOuttake.setPower(0.0);
@@ -54,7 +42,7 @@ public class OuttakeSubsystem {
         }
 
         double currentVelocity = (Math.abs(leftOuttake.getVelocity()) + Math.abs(rightOuttake.getVelocity())) / 2.0;
-        double power = currentVelocity < (targetVelocity - tolerance) ? highPower : lowPower;
+        double power = currentVelocity < targetVelocity ? 1.0 : 0.0;
         leftOuttake.setPower(power);
         rightOuttake.setPower(power);
     }

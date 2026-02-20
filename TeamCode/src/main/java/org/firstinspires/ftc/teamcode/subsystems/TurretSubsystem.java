@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 public class TurretSubsystem {
+    private static final double FULL_ROTATION_DEGREES = 360.0;
+
     private final Servo leftTurretServo;
     private final Servo rightTurretServo;
     private final OdometrySubsystem odometrySubsystem;
@@ -12,7 +14,6 @@ public class TurretSubsystem {
     private double targetXInches;
     private double targetYInches;
     private double turretHeadingDegrees;
-    private double turretRangeDegrees = 360.0;
 
     public TurretSubsystem(HardwareMap hardwareMap, OdometrySubsystem odometrySubsystem) {
         leftTurretServo = hardwareMap.get(Servo.class, "leftTurret");
@@ -27,13 +28,13 @@ public class TurretSubsystem {
     }
 
     public void rotateByDegrees(double deltaDegrees) {
-        turretHeadingDegrees = normalizeDegrees(turretHeadingDegrees + deltaDegrees, turretRangeDegrees);
+        turretHeadingDegrees = normalizeDegrees(turretHeadingDegrees + deltaDegrees);
         applyServos();
     }
 
     public void updateAutoAlign(double robotXInches, double robotYInches) {
         double targetHeading = Math.toDegrees(Math.atan2(targetYInches - robotYInches, targetXInches - robotXInches));
-        turretHeadingDegrees = normalizeDegrees(targetHeading, turretRangeDegrees);
+        turretHeadingDegrees = normalizeDegrees(targetHeading);
         applyServos();
     }
 
@@ -41,18 +42,14 @@ public class TurretSubsystem {
         updateAutoAlign(odometrySubsystem.getXInches(), odometrySubsystem.getYInches());
     }
 
-    public void setTurretRangeDegrees(double rangeDegrees) {
-        turretRangeDegrees = Math.max(1.0, rangeDegrees);
-    }
-
     private void applyServos() {
-        double position = Range.clip(turretHeadingDegrees / turretRangeDegrees, 0.0, 1.0);
+        double position = Range.clip(turretHeadingDegrees / FULL_ROTATION_DEGREES, 0.0, 1.0);
         leftTurretServo.setPosition(position);
         rightTurretServo.setPosition(position);
     }
 
-    private static double normalizeDegrees(double angle, double rangeDegrees) {
-        double normalized = angle % rangeDegrees;
-        return normalized < 0 ? normalized + rangeDegrees : normalized;
+    private static double normalizeDegrees(double angle) {
+        double normalized = angle % FULL_ROTATION_DEGREES;
+        return normalized < 0 ? normalized + FULL_ROTATION_DEGREES : normalized;
     }
 }
