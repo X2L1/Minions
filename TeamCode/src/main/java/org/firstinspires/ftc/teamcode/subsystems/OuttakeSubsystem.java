@@ -6,13 +6,19 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.tuning.RobotTuning;
+import org.firstinspires.ftc.teamcode.util.InterpolatedLookupTable;
+
 public class OuttakeSubsystem {
     private final DcMotorEx leftOuttake;
     private final DcMotorEx rightOuttake;
     private final Servo leftAngleServo;
     private final Servo rightAngleServo;
+    private final InterpolatedLookupTable velocityByDistance = new InterpolatedLookupTable();
+    private final InterpolatedLookupTable angleByDistance = new InterpolatedLookupTable();
 
     private double targetVelocity;
+    private double targetAnglePosition;
 
     public OuttakeSubsystem(HardwareMap hardwareMap) {
         leftOuttake = hardwareMap.get(DcMotorEx.class, "leftOuttake");
@@ -22,10 +28,14 @@ public class OuttakeSubsystem {
         leftAngleServo = hardwareMap.get(Servo.class, "leftOuttakeAngle");
         rightAngleServo = hardwareMap.get(Servo.class, "rightOuttakeAngle");
         rightAngleServo.setDirection(Servo.Direction.REVERSE);
+
+        addPoints(velocityByDistance, RobotTuning.Outtake.distanceToVelocityTicksPerSecond);
+        addPoints(angleByDistance, RobotTuning.Outtake.distanceToAngleServoPosition);
     }
 
     public void setAnglePosition(double position) {
         double clipped = Range.clip(position, 0.0, 1.0);
+        targetAnglePosition = clipped;
         leftAngleServo.setPosition(clipped);
         rightAngleServo.setPosition(clipped);
     }
@@ -45,5 +55,37 @@ public class OuttakeSubsystem {
         double power = currentVelocity < targetVelocity ? 1.0 : 0.0;
         leftOuttake.setPower(power);
         rightOuttake.setPower(power);
+    }
+
+    public void setPower(double power) {
+        double clippedPower = Range.clip(power, -1.0, 1.0);
+        leftOuttake.setPower(clippedPower);
+        rightOuttake.setPower(clippedPower);
+    }
+
+    public void setTargetsFromDistance(double distanceInches) {
+        setBangBangTargetVelocity(velocityByDistance.lookup(distanceInches));
+        setAnglePosition(angleByDistance.lookup(distanceInches));
+    }
+
+    public void setTargetsFromFieldTarget(double robotXInches, double robotYInches, double targetXInches, double targetYInches) {
+        setTargetsFromDistance(Math.hypot(targetXInches - robotXInches, targetYInches - robotYInches));
+    }
+
+    public double getTargetVelocity() {
+        return targetVelocity;
+    }
+
+    public double getTargetAnglePosition() {
+        return targetAnglePosition;
+    }
+
+    private static void addPoints(InterpolatedLookupTable table, double[][] points) {
+        for (double[] point : points) {
+            if (point.length < 2) {
+                throw new IllegalArgumentException("Each lookup point must have distance and value");
+            }
+            table.add(point[0], point[1]);
+        }
     }
 }

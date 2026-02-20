@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.tuning.RobotTuning;
+
 public class TurretSubsystem {
     // One full circle in degrees.
     private static final double FULL_ROTATION_DEGREES = 360.0;
@@ -21,7 +23,7 @@ public class TurretSubsystem {
     private double turretHeadingDegrees;
     // How many turret degrees your servo covers from position 0.0 -> 1.0.
     // Tune this on your robot (especially important for multi-turn servos).
-    private double servoSweepDegrees = FULL_ROTATION_DEGREES;
+    private double servoSweepDegrees = RobotTuning.Turret.servoSweepDegrees;
 
     public TurretSubsystem(HardwareMap hardwareMap, OdometrySubsystem odometrySubsystem) {
         leftTurretServo = hardwareMap.get(Servo.class, "leftTurret");
@@ -62,6 +64,14 @@ public class TurretSubsystem {
             throw new IllegalArgumentException("Servo sweep degrees must be > 0");
         }
         servoSweepDegrees = degrees;
+    }
+
+    public double getTurretHeadingDegrees() {
+        return turretHeadingDegrees;
+    }
+
+    public double getServoSweepDegrees() {
+        return servoSweepDegrees;
     }
 
     // Convert heading (0..360) into servo position (0..1) and send to both servos.
