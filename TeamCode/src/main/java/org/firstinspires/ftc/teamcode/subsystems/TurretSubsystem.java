@@ -11,13 +11,13 @@ public class TurretSubsystem {
     // Two servos that move the turret together.
     private final Servo leftTurretServo;
     private final Servo rightTurretServo;
-    // Odometry tells us where the robot currently is on the field.
+    // Reference to odometry subsystem for tracking robot position on the field.
     private final OdometrySubsystem odometrySubsystem;
 
     // Field point we want to aim at.
     private double targetXInches;
     private double targetYInches;
-    // Turret heading stored as 0..360 degrees.
+    // Current turret heading in degrees (normalized to 0..360 range).
     private double turretHeadingDegrees;
 
     public TurretSubsystem(HardwareMap hardwareMap, OdometrySubsystem odometrySubsystem) {
