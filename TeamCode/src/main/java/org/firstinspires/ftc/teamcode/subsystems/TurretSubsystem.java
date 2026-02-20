@@ -19,6 +19,9 @@ public class TurretSubsystem {
     private double targetYInches;
     // Current turret heading in degrees (normalized to 0..360 range).
     private double turretHeadingDegrees;
+    // How many turret degrees your servo covers from position 0.0 -> 1.0.
+    // Tune this on your robot (especially important for multi-turn servos).
+    private double servoSweepDegrees = FULL_ROTATION_DEGREES;
 
     public TurretSubsystem(HardwareMap hardwareMap, OdometrySubsystem odometrySubsystem) {
         leftTurretServo = hardwareMap.get(Servo.class, "leftTurret");
@@ -53,9 +56,17 @@ public class TurretSubsystem {
         updateAutoAlign(odometrySubsystem.getXInches(), odometrySubsystem.getYInches());
     }
 
+    // Calibrate mapping when servo rotation is not exactly 360 degrees.
+    public void setServoSweepDegrees(double degrees) {
+        if (degrees <= 0.0) {
+            throw new IllegalArgumentException("Servo sweep degrees must be > 0");
+        }
+        servoSweepDegrees = degrees;
+    }
+
     // Convert heading (0..360) into servo position (0..1) and send to both servos.
     private void applyServos() {
-        double position = Range.clip(turretHeadingDegrees / FULL_ROTATION_DEGREES, 0.0, 1.0);
+        double position = Range.clip(turretHeadingDegrees / servoSweepDegrees, 0.0, 1.0);
         leftTurretServo.setPosition(position);
         rightTurretServo.setPosition(position);
     }
