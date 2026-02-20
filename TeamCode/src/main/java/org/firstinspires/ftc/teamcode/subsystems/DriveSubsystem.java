@@ -46,4 +46,11 @@ public class DriveSubsystem {
         backLeft.setPower(backLeftPower / max);
         backRight.setPower(backRightPower / max);
     }
+
+    public void driveFieldCentric(double axial, double lateral, double yaw, double headingDegrees) {
+        double headingRadians = Math.toRadians(headingDegrees);
+        double robotLateral = lateral * Math.cos(-headingRadians) - axial * Math.sin(-headingRadians);
+        double robotAxial = lateral * Math.sin(-headingRadians) + axial * Math.cos(-headingRadians);
+        driveRobotCentric(robotAxial, robotLateral, yaw);
+    }
 }

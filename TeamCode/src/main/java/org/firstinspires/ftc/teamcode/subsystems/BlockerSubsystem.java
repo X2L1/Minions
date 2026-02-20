@@ -4,10 +4,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.tuning.RobotTuning;
+
 public class BlockerSubsystem {
     private final Servo blockerServo;
-    private double blockedPosition = 1.0;
-    private double openPosition = 0.0;
+    private double blockedPosition = RobotTuning.Blocker.blockedPosition;
+    private double openPosition = RobotTuning.Blocker.openPosition;
 
     public BlockerSubsystem(HardwareMap hardwareMap) {
         blockerServo = hardwareMap.get(Servo.class, "blocker");

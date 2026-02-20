@@ -6,16 +6,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.tuning.RobotTuning;
 
 public class OdometrySubsystem {
-    private static final double X_OFFSET_MM = -84.0;
-    private static final double Y_OFFSET_MM = -168.0;
-
     private final GoBildaPinpointDriver pinpoint;
 
     public OdometrySubsystem(HardwareMap hardwareMap) {
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        pinpoint.setOffsets(X_OFFSET_MM, Y_OFFSET_MM, DistanceUnit.MM);
+        pinpoint.setOffsets(RobotTuning.Odometry.xOffsetMm, RobotTuning.Odometry.yOffsetMm, DistanceUnit.MM);
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setEncoderDirections(
                 GoBildaPinpointDriver.EncoderDirection.FORWARD,
