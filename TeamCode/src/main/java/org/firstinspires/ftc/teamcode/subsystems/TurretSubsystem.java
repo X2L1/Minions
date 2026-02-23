@@ -4,8 +4,14 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.har
 
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.util.MathUtils;
+
 public class TurretSubsystem {
     Servo turretLeft, turretRight;
+
+    private static final double TURRET_MIN_ANGLE_RAD = -Math.PI;
+    private static final double TURRET_MAX_ANGLE_RAD = Math.PI;
+
      public void init()
      {
          turretLeft = hardwareMap.get(Servo.class, "turretLeft");
@@ -15,5 +21,20 @@ public class TurretSubsystem {
      {
          turretLeft.setPosition(position);
          turretRight.setPosition(position);
+     }
+     public void pointAt(double targetX, double targetY, OdometrySubsystem odometry)
+     {
+         double robotX = odometry.getXmm();
+         double robotY = odometry.getYmm();
+         double robotHeading = odometry.getHeadingRadians();
+
+         double angleToTarget = Math.atan2(targetY - robotY, targetX - robotX);
+         double relativeAngle = MathUtils.normalizeAngle(angleToTarget - robotHeading);
+
+         double position = MathUtils.mapRange(relativeAngle,
+                 TURRET_MIN_ANGLE_RAD, TURRET_MAX_ANGLE_RAD, 0.0, 1.0);
+         position = MathUtils.clamp(position, 0.0, 1.0);
+
+         setPosition(position);
      }
 }

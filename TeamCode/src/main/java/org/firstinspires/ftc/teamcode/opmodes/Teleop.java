@@ -39,6 +39,7 @@ public class Teleop extends OpMode {
         {
             robot.outtakeSubsystem.setVelocityWithBangBang(lut.velocityLUT.lookup(robot.odometrySubsystem.getDistanceTo(goalX,goalY)));
             robot.outtakeSubsystem.setAngle(lut.angleLUT.lookup(robot.odometrySubsystem.getDistanceTo(goalX,goalY)));
+            robot.turretSubsystem.pointAt(goalX, goalY, robot.odometrySubsystem);
         }
         else
         {

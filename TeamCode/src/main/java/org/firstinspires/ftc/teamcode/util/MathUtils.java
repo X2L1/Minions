@@ -32,4 +32,14 @@ public final class MathUtils {
         }
         return Math.abs(a - b) <= tolerance;
     }
+
+    public static double normalizeAngle(double angleRadians) {
+        double angle = angleRadians % (2 * Math.PI);
+        if (angle > Math.PI) {
+            angle -= 2 * Math.PI;
+        } else if (angle <= -Math.PI) {
+            angle += 2 * Math.PI;
+        }
+        return angle;
+    }
 }
