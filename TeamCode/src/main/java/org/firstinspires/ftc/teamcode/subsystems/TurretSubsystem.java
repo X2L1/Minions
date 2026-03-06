@@ -2,29 +2,46 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.util.MathUtils;
 
 public class TurretSubsystem {
-    Servo turretLeft, turretRight;
+    CRServo turret;
+    DcMotor encoderMotor;
 
-    private static final double SERVO_RANGE_DEG = 300.0;
-    private static final double GEAR_RATIO = 8.0 / 3.0;
-    private static final double TURRET_RANGE_RAD = Math.toRadians(SERVO_RANGE_DEG / GEAR_RATIO);
-    private static final double TURRET_MIN_ANGLE_RAD = -TURRET_RANGE_RAD / 2.0;
-    private static final double TURRET_MAX_ANGLE_RAD = TURRET_RANGE_RAD / 2.0;
+    private static final double TICKS_PER_REV = 8192.0;
+    private static final double MAX_ROTATION_RAD = 1.5 * 2 * Math.PI;
+    private static final double DEADBAND_RAD = 0.01;
+    // kP may need empirical tuning on the physical robot
+    private static final double kP = 1.0;
 
-     public void init()
+    private double targetAngleRad = 0;
+
+     public void init(DcMotor transferMotor)
      {
-         turretLeft = hardwareMap.get(Servo.class, "turretLeft");
-         turretRight = hardwareMap.get(Servo.class, "turretRight");
+         turret = hardwareMap.get(CRServo.class, "turret");
+         this.encoderMotor = transferMotor;
      }
-     public void setPosition(double position)
+
+     public double getCurrentAngleRadians()
      {
-         turretLeft.setPosition(position);
-         turretRight.setPosition(position);
+         return ((double) encoderMotor.getCurrentPosition() / TICKS_PER_REV) * 2 * Math.PI;
      }
+
+     public void setTargetAngle(double angleRad)
+     {
+         double currentAngle = getCurrentAngleRadians();
+
+         double offset = MathUtils.normalizeAngle(angleRad - currentAngle);
+         double candidate = currentAngle + offset;
+
+         candidate = MathUtils.clamp(candidate, -MAX_ROTATION_RAD, MAX_ROTATION_RAD);
+
+         targetAngleRad = candidate;
+     }
+
      public void pointAt(double targetX, double targetY, OdometrySubsystem odometry)
      {
          double robotX = odometry.getXmm();
@@ -34,10 +51,24 @@ public class TurretSubsystem {
          double angleToTarget = Math.atan2(targetY - robotY, targetX - robotX);
          double relativeAngle = MathUtils.normalizeAngle(angleToTarget - robotHeading);
 
-         double position = MathUtils.mapRange(relativeAngle,
-                 TURRET_MIN_ANGLE_RAD, TURRET_MAX_ANGLE_RAD, 0.0, 1.0);
-         position = MathUtils.clamp(position, 0.0, 1.0);
+         setTargetAngle(relativeAngle);
+     }
 
-         setPosition(position);
+     public void update()
+     {
+         double currentAngle = getCurrentAngleRadians();
+         double error = targetAngleRad - currentAngle;
+         if (Math.abs(error) < DEADBAND_RAD) {
+             turret.setPower(0);
+             return;
+         }
+         double power = kP * error;
+         power = MathUtils.clamp(power, -1.0, 1.0);
+         turret.setPower(power);
+     }
+
+     public void stop()
+     {
+         turret.setPower(0);
      }
 }

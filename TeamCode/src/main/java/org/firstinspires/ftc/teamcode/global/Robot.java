@@ -22,7 +22,7 @@ public class Robot {
         driveSubsystem.init();
         intakeSubsystem.init();
         outtakeSubsystem.init();
-        turretSubsystem.init();
+        turretSubsystem.init(intakeSubsystem.getTransferMotor());
         odometrySubsystem.init();
     }
 }
