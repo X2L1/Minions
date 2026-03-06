@@ -13,6 +13,8 @@ public class TurretSubsystem {
 
     private static final double TICKS_PER_REV = 8192.0;
     private static final double MAX_ROTATION_RAD = 1.5 * 2 * Math.PI;
+    private static final double DEADBAND_RAD = 0.01;
+    // kP may need empirical tuning on the physical robot
     private static final double kP = 1.0;
 
     private double targetAngleRad = 0;
@@ -25,7 +27,7 @@ public class TurretSubsystem {
 
      public double getCurrentAngleRadians()
      {
-         return (encoderMotor.getCurrentPosition() / TICKS_PER_REV) * 2 * Math.PI;
+         return ((double) encoderMotor.getCurrentPosition() / TICKS_PER_REV) * 2 * Math.PI;
      }
 
      public void setTargetAngle(double angleRad)
@@ -56,6 +58,10 @@ public class TurretSubsystem {
      {
          double currentAngle = getCurrentAngleRadians();
          double error = targetAngleRad - currentAngle;
+         if (Math.abs(error) < DEADBAND_RAD) {
+             turret.setPower(0);
+             return;
+         }
          double power = kP * error;
          power = MathUtils.clamp(power, -1.0, 1.0);
          turret.setPower(power);

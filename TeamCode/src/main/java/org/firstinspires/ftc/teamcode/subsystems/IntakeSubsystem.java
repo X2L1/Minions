@@ -18,6 +18,8 @@ public class IntakeSubsystem {
         intake = hardwareMap.get(DcMotor.class, "intake");
         transfer = hardwareMap.get(DcMotor.class, "transfer");
         blocker = hardwareMap.get(Servo.class, "blocker");
+        // Reset the encoder used by TurretSubsystem for position tracking.
+        // The turret must be at its home position when the robot is initialized.
         transfer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         transfer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
