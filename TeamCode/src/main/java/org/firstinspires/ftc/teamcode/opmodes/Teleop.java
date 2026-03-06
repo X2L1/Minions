@@ -45,12 +45,14 @@ public class Teleop extends OpMode {
         {
             robot.outtakeSubsystem.stop();
         }
+        robot.turretSubsystem.update();
         robot.odometrySubsystem.update();
     }
     @Override
     public void stop() {
         robot.intakeSubsystem.stop();
         robot.outtakeSubsystem.stop();
+        robot.turretSubsystem.stop();
     }
 
 }
